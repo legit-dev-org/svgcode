@@ -6,6 +6,7 @@ export interface IGcodePathRootConfig {
     name: string;
     z?: number;
     iterationsPerMM?: number;
+    linearTolerance?: number;
     curveApproximations?: number;
 }
 
@@ -15,6 +16,7 @@ export interface IGcodePathParserConfig {
     z: number;
     iterationsPerMM: number;
     curveApproximations: number;
+    linearTolerance: number;
     documentHeight: number;
 }
 
@@ -24,7 +26,8 @@ interface IGcodePathRoot extends IGcodePathRootConfig {
 
 interface IGcodePath {
     parser: SvgPathParser;
-    iterationsPerMM?: number;
+    iterationsPerMM: number;
+    linearTolerance: number;
     source: string;
     z: number;
 }
@@ -43,6 +46,7 @@ export class GcodePathParser {
                         node: n,
                         name: root.name,
                         z: root.z,
+                        linearTolerance: root.linearTolerance,
                         iterationsPerMM: root.iterationsPerMM,
                     });
                     return false;
@@ -58,6 +62,7 @@ export class GcodePathParser {
                     paths.push({
                         parser,
                         source: n.attributes["id"],
+                        linearTolerance: rootNode.linearTolerance ?? config.linearTolerance,
                         iterationsPerMM: rootNode.iterationsPerMM ?? config.iterationsPerMM,
                         z: rootNode.z ?? config.z,
                     });
@@ -75,7 +80,7 @@ export class GcodePathParser {
 
         // draw each path
         for (const path of paths) {
-            const iterationPerMM = path.iterationsPerMM ?? config.iterationsPerMM;
+            const iterationPerMM = path.iterationsPerMM;
             const shapes = path.parser.getShapes();
             for (let i = 0; i < shapes.length; i++) {
                 const shape = shapes[i];
@@ -97,7 +102,7 @@ export class GcodePathParser {
                     const middle = pathPoints[r + 1];
                     const right = pathPoints[r + 2];
 
-                    if (this.isMiddlePointRedundant(left, middle, right)) {
+                    if (this.isMiddlePointRedundant(left, middle, right, path.linearTolerance)) {
                         pathPoints.splice(r + 1, 1);
                         // do not increment i, allow it to continue reducing from left
                     } else {
@@ -122,7 +127,7 @@ export class GcodePathParser {
         return gcode;
     }
 
-    private static isMiddlePointRedundant(p1: Point, p2: Point, p3: Point, epsilon: number = 1e-9): boolean {
+    private static isMiddlePointRedundant(p1: Point, p2: Point, p3: Point, epsilon: number): boolean {
         const [x1, y1] = [p1.x, p1.y];
         const [x2, y2] = [p2.x, p2.y];
         const [x3, y3] = [p3.x, p3.y];

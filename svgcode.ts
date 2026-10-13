@@ -19,6 +19,7 @@ const _drillZ = 0;
 const _drillCombineDistance = 1;
 const _pathZ = 0;
 const _pathIterationsPerMM = 1;
+const _pathLinearTolerance = 1e-3;
 const _pathCurveApproximations = 100;
 
 const configJsonDetails = {
@@ -73,6 +74,10 @@ const configJsonDetails = {
     pathCurveApproximations: {
         default: `${_pathCurveApproximations}`,
         description: "Number of approximations used on path curves",
+    },
+    pathLinearTolerance: {
+        efault: `${_pathLinearTolerance}`,
+        description: "Amount of tolerance when reducing linear paths",
     },
     pathRoots: {
         default: "[...elements]",
@@ -142,6 +147,7 @@ for (const cfg of cfgs) {
     let pathCurveApproximations = _pathCurveApproximations;
     let pathIterationsPerMM = _pathIterationsPerMM;
     let drillCombineDistance = _drillCombineDistance;
+    let pathLinearTolerance = _pathLinearTolerance;
     let slowSpeed = _slowSpeed;
     let fastSpeed = _fastSpeed;
 
@@ -159,6 +165,9 @@ for (const cfg of cfgs) {
     }
     if (cfg.pathIterationsPerMM !== undefined) {
         pathIterationsPerMM = getConfigNumber(cfg.pathIterationsPerMM);
+    }
+    if (cfg.pathLinearTolerance !== undefined) {
+        pathLinearTolerance = getConfigNumber(cfg.pathLinearTolerance);
     }
     if (cfg.drillCombineDistance !== undefined) {
         drillCombineDistance = getConfigNumber(cfg.drillCombineDistance);
@@ -198,6 +207,8 @@ for (const cfg of cfgs) {
             const cfg: IGcodePathRootConfig = {
                 name: p.name,
                 iterationsPerMM: p.iterationsPerMM === undefined ? undefined : getConfigNumber(p.iterationsPerMM),
+                linearTolerance: p.linearTolerance === undefined ? undefined : getConfigNumber(p.linearTolerance),
+                curveApproximations: p.curveApproximations === undefined ? undefined : getConfigNumber(p.curveApproximations),
                 z: p.z === undefined ? undefined : getConfigNumber(p.z),
             };
             return cfg;
@@ -251,11 +262,12 @@ for (const cfg of cfgs) {
         gcode.push(...GcodePathParser.getPathCommands(svg, {
             curveApproximations: pathCurveApproximations,
             iterationsPerMM: pathIterationsPerMM,
+            linearTolerance: pathLinearTolerance,
             z: pathZ,
             pathRoots,
             safeZ,
             documentHeight,
-        }))
+        }));
     }
 
     if (cfg.output !== undefined) {
