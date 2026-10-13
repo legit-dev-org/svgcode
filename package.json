@@ -1,0 +1,12 @@
+{
+  "name": "svgcode",
+  "version": "1.0.0",
+  "description": "Generates GCode from SVG input",
+  "main": "svgcode.ts",
+  "devDependencies": {
+    "@types/node": "^26.6.5"
+  },
+  "author": "tyler@legit.dev",
+  "license": "ISC",
+  "type": "module"
+}
