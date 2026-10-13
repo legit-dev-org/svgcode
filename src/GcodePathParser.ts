@@ -86,6 +86,24 @@ export class GcodePathParser {
                 for (let i = 0; i < iterations; i++) {
                     pathPoints.push(shape.getPointForPath(Math.min(1, i * iterationAmount)));
                 }
+
+                // reduce pathPoints for linear progress - if 3 path points are "linear enough" get rid of middle one
+                let r = 0;
+                while (r < pathPoints.length) {
+                    if (r + 2 >= pathPoints.length) {
+                        break;
+                    }
+                    const left = pathPoints[r];
+                    const middle = pathPoints[r + 1];
+                    const right = pathPoints[r + 2];
+
+                    if (this.isMiddlePointRedundant(left, middle, right)) {
+                        pathPoints.splice(r + 1, 1);
+                        // do not increment i, allow it to continue reducing from left
+                    } else {
+                        r++;
+                    }
+                }
             
                 if (pathPoints.length > 0) {
                     gcode.push(`G00 X${pathPoints[0].x} Y${getY(pathPoints[0].y)} Z${config.safeZ}`);
@@ -102,5 +120,21 @@ export class GcodePathParser {
         gcode.push(`G01 Z${config.safeZ}`);
         gcode.push(`G00 X0 Y0 Z${config.safeZ}`);
         return gcode;
+    }
+
+    private static isMiddlePointRedundant(p1: Point, p2: Point, p3: Point, epsilon: number = 1e-9): boolean {
+        const [x1, y1] = [p1.x, p1.y];
+        const [x2, y2] = [p2.x, p2.y];
+        const [x3, y3] = [p3.x, p3.y];
+
+        const crossProduct = (x2 - x1) * (y3 - y1) - (y2 - y1) * (x3 - x1);
+        if (Math.abs(crossProduct) > epsilon) {
+            return false; // Not on the same line
+        }
+
+        const onX = Math.min(x1, x3) - epsilon <= x2 && x2 <= Math.max(x1, x3) + epsilon;
+        const onY = Math.min(y1, y3) - epsilon <= y2 && y2 <= Math.max(y1, y3) + epsilon;
+        
+        return onX && onY;
     }
 }
