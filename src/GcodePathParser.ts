@@ -5,7 +5,7 @@ import { XMLNode } from "./XMLParser.ts";
 export interface IGcodePathRootConfig {
     name: string;
     z?: number;
-    iterationsPerPath?: number;
+    iterationsPerMM?: number;
     curveApproximations?: number;
 }
 
@@ -13,7 +13,7 @@ export interface IGcodePathParserConfig {
     pathRoots: Array<IGcodePathRootConfig>;
     safeZ: number;
     z: number;
-    iterationsPerPath: number;
+    iterationsPerMM: number;
     curveApproximations: number;
     documentHeight: number;
 }
@@ -24,7 +24,8 @@ interface IGcodePathRoot extends IGcodePathRootConfig {
 
 interface IGcodePath {
     parser: SvgPathParser;
-    iterations?: number;
+    iterationsPerMM?: number;
+    source: string;
     z: number;
 }
 
@@ -42,7 +43,7 @@ export class GcodePathParser {
                         node: n,
                         name: root.name,
                         z: root.z,
-                        iterationsPerPath: root.iterationsPerPath,
+                        iterationsPerMM: root.iterationsPerMM,
                     });
                     return false;
                 }
@@ -56,7 +57,8 @@ export class GcodePathParser {
                     const parser = new SvgPathParser(n, rootNode.curveApproximations ?? config.curveApproximations);
                     paths.push({
                         parser,
-                        iterations: rootNode.iterationsPerPath ?? config.iterationsPerPath,
+                        source: n.attributes["id"],
+                        iterationsPerMM: rootNode.iterationsPerMM ?? config.iterationsPerMM,
                         z: rootNode.z ?? config.z,
                     });
                 } else {
@@ -67,22 +69,33 @@ export class GcodePathParser {
 
         gcode.push(`G01 Z${config.safeZ}`);
 
+        const getY = (y: number) => {
+            return config.documentHeight - y;
+        };
+
         // draw each path
         for (const path of paths) {
-            const pathPoints = new Array<Point>();
-            const iterations = path.iterations ?? config.iterationsPerPath;
-            const iterationAmount = 1.0 / (iterations - 1);
-            for (let i = 0; i < iterations; i++) {
-                pathPoints.push(path.parser.getPointForPath(Math.max(1, i * iterationAmount)));
-            }
-            if (pathPoints.length > 0) {
-                gcode.push(`G00 X${pathPoints[0].x} Y${pathPoints[0].y} Z${config.safeZ}`);
-                gcode.push(`G01 Z${path.z}`);
-                for (let i = 1; i < pathPoints.length; i++) {
-                    const p = pathPoints[i];
-                    gcode.push(`G01 X${p.x} Y${p.y}`);
+            const iterationPerMM = path.iterationsPerMM ?? config.iterationsPerMM;
+            const shapes = path.parser.getShapes();
+            for (let i = 0; i < shapes.length; i++) {
+                const shape = shapes[i];
+                const iterations = iterationPerMM * shape.totalLength;
+                const iterationAmount = 1.0 / (iterations - 1);
+
+                const pathPoints = new Array<Point>();
+                for (let i = 0; i < iterations; i++) {
+                    pathPoints.push(shape.getPointForPath(Math.min(1, i * iterationAmount)));
                 }
-                gcode.push(`G01 Z${config.safeZ}`);
+            
+                if (pathPoints.length > 0) {
+                    gcode.push(`G00 X${pathPoints[0].x} Y${getY(pathPoints[0].y)} Z${config.safeZ}`);
+                    gcode.push(`G01 Z${path.z}`);
+                    for (let i = 1; i < pathPoints.length; i++) {
+                        const p = pathPoints[i];
+                        gcode.push(`G01 X${p.x} Y${getY(p.y)}`);
+                    }
+                    gcode.push(`G01 Z${config.safeZ}`);
+                }
             }
         }
 

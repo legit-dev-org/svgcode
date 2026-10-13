@@ -23,6 +23,7 @@ interface IGcodeDrillRoot extends IGcodeDrillRootConfig {
 
 interface IGcodeDrillPoint extends Point {
     z: number;
+    source: string;
     order: number;
 }
 
@@ -53,13 +54,15 @@ export class GcodeDrillParser {
             rootNode.node.walkChildrenRecursive((n) => {
                 if (n.name === "path") {
                     const parser = new SvgPathParser(n, 20);
-                    const start = parser.getPointForPath(0);
-                    const end = parser.getPointForPath(1);
-                    drillPointsRaw.push({ x: start.x, y: config.documentHeight - start.y, z: z, order: rootNode.order });
-                    drillPointsRaw.push({ x: end.x, y: config.documentHeight - end.y, z: z, order: rootNode.order });
+                    for (const shape of parser.getShapes()) {
+                        const start = shape.getPointForPath(0);
+                        const end = shape.getPointForPath(1);
+                        drillPointsRaw.push({ x: start.x, y: config.documentHeight - start.y, z: z, order: rootNode.order, source: n.attributes["id"] });
+                        drillPointsRaw.push({ x: end.x, y: config.documentHeight - end.y, z: z, order: rootNode.order, source: n.attributes["id"] });
+                    }
                 } else if (n.name === "circle") {
                     const p = SvgCircleParser.getOrigin(n);
-                    drillPointsRaw.push({ x: p.x, y: config.documentHeight - p.y, z: z, order: rootNode.order });
+                    drillPointsRaw.push({ x: p.x, y: config.documentHeight - p.y, z: z, order: rootNode.order, source: n.attributes["id"] });
                 } else {
                     console.warn(`No parser for type '${n.name}'`);
                 }

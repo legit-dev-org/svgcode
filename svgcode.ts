@@ -18,7 +18,7 @@ const _fastSpeed = 2000;
 const _drillZ = 0;
 const _drillCombineDistance = 1;
 const _pathZ = 0;
-const _pathIterations = 100;
+const _pathIterationsPerMM = 1;
 const _pathCurveApproximations = 100;
 
 const configJsonDetails = {
@@ -66,9 +66,9 @@ const configJsonDetails = {
         default: `${_pathZ}mm`,
         description: "Z distance from '0' when carving paths, unless specified by pathRoots items",
     },
-    pathIterations: {
-        default: `${_pathIterations}`,
-        description: "Iterations of the path as movement operations, unless specified by pathRoots items",
+    pathIterationsPerMM: {
+        default: `${_pathIterationsPerMM}`,
+        description: "Iterations of the path as movement operations per mm, unless specified by pathRoots items",
     },
     pathCurveApproximations: {
         default: `${_pathCurveApproximations}`,
@@ -85,8 +85,8 @@ const configJsonDetails = {
             z: {
                 description: "Z distance from '0' when carving paths",
             },
-            iterationsPerPath: {
-                description: "Iterations of the path as movement operations"
+            iterationsPerMM: {
+                description: "Iterations of the path as movement operations per mm"
             },
             curveApproximations: {
                 description: "Number of approximations used on path curves",
@@ -140,7 +140,7 @@ for (const cfg of cfgs) {
     let drillZ = _drillZ;
     let pathZ = _pathZ;
     let pathCurveApproximations = _pathCurveApproximations;
-    let pathIterations = _pathIterations;
+    let pathIterationsPerMM = _pathIterationsPerMM;
     let drillCombineDistance = _drillCombineDistance;
     let slowSpeed = _slowSpeed;
     let fastSpeed = _fastSpeed;
@@ -157,8 +157,8 @@ for (const cfg of cfgs) {
     if (cfg.pathCurveApproximations !== undefined) {
         pathCurveApproximations = getConfigNumber(cfg.pathCurveApproximations);
     }
-    if (cfg.pathIterations !== undefined) {
-        pathIterations = getConfigNumber(cfg.pathIterations);
+    if (cfg.pathIterationsPerMM !== undefined) {
+        pathIterationsPerMM = getConfigNumber(cfg.pathIterationsPerMM);
     }
     if (cfg.drillCombineDistance !== undefined) {
         drillCombineDistance = getConfigNumber(cfg.drillCombineDistance);
@@ -197,7 +197,7 @@ for (const cfg of cfgs) {
         pathRoots = cfg.pathRoots.map((p: IGcodePathRootConfig) => {
             const cfg: IGcodePathRootConfig = {
                 name: p.name,
-                iterationsPerPath: p.iterationsPerPath === undefined ? undefined : getConfigNumber(p.iterationsPerPath),
+                iterationsPerMM: p.iterationsPerMM === undefined ? undefined : getConfigNumber(p.iterationsPerMM),
                 z: p.z === undefined ? undefined : getConfigNumber(p.z),
             };
             return cfg;
@@ -250,7 +250,7 @@ for (const cfg of cfgs) {
 
         gcode.push(...GcodePathParser.getPathCommands(svg, {
             curveApproximations: pathCurveApproximations,
-            iterationsPerPath: pathIterations,
+            iterationsPerMM: pathIterationsPerMM,
             z: pathZ,
             pathRoots,
             safeZ,
