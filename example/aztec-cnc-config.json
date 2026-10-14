@@ -1,0 +1,53 @@
+[
+    {
+        "input": "./aztec-yarn-art-full.svg",
+        "output": "./aztec-yarn-art-cnc-holes.gcode",
+        "drillZ": -40,
+        "drillRoots": [
+            {
+                "name": "front-holes-lines-1"
+            },
+            {
+                "name": "front-holes-lines-2"
+            },
+            {
+                "name": "front-holes-lines-3"
+            },
+            {
+                "name": "front-holes-lines-4"
+            },
+            {
+                "name": "front-holes-lines-5"
+            },
+            {
+                "name": "front-holes-lines-6"
+            }
+        ]
+    },
+    {
+        "input": "./aztec-yarn-art-full.svg",
+        "output": "./aztec-yarn-art-cnc-front.gcode",
+        "pathZ": -10,
+        "pathRoots": [
+            {
+                "name": "front-depth-outer"
+            },
+            {
+                "name": "front-depth-inner"
+            }
+        ]
+    },
+    {
+        "input": "./aztec-yarn-art-full.svg",
+        "output": "./aztec-yarn-art-cnc-back.gcode",
+        "pathZ": -10,
+        "pathRoots": [
+            {
+                "name": "back-depth-outer"
+            },
+            {
+                "name": "back-depth-inner"
+            }
+        ]
+    }
+]
