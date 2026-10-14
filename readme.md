@@ -90,6 +90,7 @@ Create a configuration JSON file to control how `svgcode` parses your vector dat
 * **`pathZ`**: Defines the 'Z' value when carving paths. Can also be defined on `pathRoots`
 
 See [Config Syntax](./svgcode-syntax.ts) for full usage/details.
+
 ---
 
 ### Step 3: Run the Tool
@@ -109,5 +110,7 @@ Before sending any code to your physical machine, always verify and simulate you
 * [Back gcode](./example/aztec-yarn-art-cnc-back.gcode)
 * [Holes gcode](./example/aztec-yarn-art-cnc-holes.gcode)
 
-#### Final Example
+---
+
+### Example Result
 ![Aztec Yarn Art Example Image](example/aztec-yarn-art-example.png)
