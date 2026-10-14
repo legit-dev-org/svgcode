@@ -83,9 +83,9 @@ Create a configuration JSON file to control how `svgcode` parses your vector dat
 ```
 
 #### Configuration Notes:
-* **`output`**: Each configuration section defines an input SVG and output g-code. These are purposefully split into their own g-code files to allow for board orientation changes (front/back) or tool changes (path vs drill).
-* **`drillRoots`**: Defines SVG element id/labels that act as roots for subsequent SVG path/circle elements to drill
-* **`pathRoots`**: Defines SVG element id/labels that act as roots for subsequent SVG path/circle elements to carve
+* **`output`**: Each configuration section defines an input SVG and output g-code. These are purposefully split into their own g-code files to allow for board orientation changes (front vs back) or tool changes (path vs drill).
+* **`drillRoots`**: Defines SVG element id/labels that act as roots for child SVG path/circle elements to use for drilling
+* **`pathRoots`**: Defines SVG element id/labels that act as roots for child SVG path/circle elements to use for carving paths
 * **`drillZ`**: Defines the 'Z' value when drilling holes. Can also be defined on `drillRoots`
 * **`pathZ`**: Defines the 'Z' value when carving paths. Can also be defined on `pathRoots`
 
