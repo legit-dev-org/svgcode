@@ -72,6 +72,7 @@ export class GcodePathParser {
             });
         }
 
+        paths.reverse();
         gcode.push(`G01 Z${config.safeZ}`);
 
         const getY = (y: number) => {

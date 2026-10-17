@@ -84,13 +84,12 @@ export class GcodeDrillParser {
             if (drillPointsRaw[0] && drillPointsRaw[1]) {
                 while (drillPointsRaw[0] && drillPointsRaw[1] && distanceBetween(drillPointsRaw[0], drillPointsRaw[1]) <= config.combineDistance) {
                     const keep = drillPointsRaw[0].order < drillPointsRaw[1].order ? drillPointsRaw[0] : drillPointsRaw[1];
-                    const distance = distanceBetween(drillPointsRaw[0], drillPointsRaw[1])
+                    const distance = distanceBetween(drillPointsRaw[0], drillPointsRaw[1]);
                     if (distance > config.combineDistance / 20) {
                         console.warn(`Found duplicate drill hole placements: \n    {x: ${drillPointsRaw[0].x} y: ${drillPointsRaw[0].y } ~= {x: ${drillPointsRaw[1].x} y: ${drillPointsRaw[1].y }`);
                         console.warn(`    distance: ${distance}, threshold: ${config.combineDistance}`);
                     }
                     drillPointsRaw.splice(0, 2, keep);
-                    drillPointsRaw.push(keep);
                 }
             }
 

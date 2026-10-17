@@ -55,12 +55,19 @@ Create a configuration JSON file to control how `svgcode` parses your vector dat
     },
     {
         "input": "./aztec-yarn-art-full.svg",
-        "output": "./aztec-yarn-art-cnc-front.gcode",
-        "pathZ": -10,
+        "output": "./aztec-yarn-art-cnc-front-outer.gcode",
+        "pathZ": -5,
         "pathRoots": [
             {
                 "name": "front-depth-outer"
-            },
+            }
+        ]
+    },
+    {
+        "input": "./aztec-yarn-art-full.svg",
+        "output": "./aztec-yarn-art-cnc-front-inner.gcode",
+        "pathZ": -5,
+        "pathRoots": [
             {
                 "name": "front-depth-inner"
             }
@@ -68,18 +75,26 @@ Create a configuration JSON file to control how `svgcode` parses your vector dat
     },
     {
         "input": "./aztec-yarn-art-full.svg",
-        "output": "./aztec-yarn-art-cnc-back.gcode",
-        "pathZ": -10,
+        "output": "./aztec-yarn-art-cnc-back-outer.gcode",
+        "pathZ": -5,
         "pathRoots": [
             {
                 "name": "back-depth-outer"
-            },
+            }
+        ]
+    },
+    {
+        "input": "./aztec-yarn-art-full.svg",
+        "output": "./aztec-yarn-art-cnc-back-inner.gcode",
+        "pathZ": -5,
+        "pathRoots": [
             {
                 "name": "back-depth-inner"
             }
         ]
     }
 ]
+
 ```
 
 #### Configuration Notes:
@@ -106,9 +121,11 @@ node svgcode.ts '<path to config>/aztec-cnc-config.json'
 Before sending any code to your physical machine, always verify and simulate your generated files using trusted online gcode viewers like [NCViewer](https://ncviewer.com/) to ensure toolpaths, depths, and sequences are completely accurate.
 
 #### Resulting Output Files:
-* [Front gcode](./example/aztec-yarn-art-cnc-front.gcode)
-* [Back gcode](./example/aztec-yarn-art-cnc-back.gcode)
-* [Holes gcode](./example/aztec-yarn-art-cnc-holes.gcode)
+* [Front Outer gcode](./example/aztec-yarn-art-cnc-front-outer.gcode) - 1/2" bullnose bit
+* [Front Cutout gcode](./example/aztec-yarn-art-cnc-front-inner.gcode) - 1/2" flat bit
+* [Back Outer gcode](./example/aztec-yarn-art-cnc-back-outer.gcode) - 1/2" bullnose bit
+* [Back Cutout gcode](./example/aztec-yarn-art-cnc-back-inner.gcode) - 1/2" flat bit
+* [Holes gcode](./example/aztec-yarn-art-cnc-holes.gcode) - 1/8" flat bit
 
 ---
 

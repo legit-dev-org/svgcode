@@ -26,12 +26,19 @@
     },
     {
         "input": "./aztec-yarn-art-full.svg",
-        "output": "./aztec-yarn-art-cnc-front.gcode",
-        "pathZ": -10,
+        "output": "./aztec-yarn-art-cnc-front-outer.gcode",
+        "pathZ": -5,
         "pathRoots": [
             {
                 "name": "front-depth-outer"
-            },
+            }
+        ]
+    },
+    {
+        "input": "./aztec-yarn-art-full.svg",
+        "output": "./aztec-yarn-art-cnc-front-inner.gcode",
+        "pathZ": -5,
+        "pathRoots": [
             {
                 "name": "front-depth-inner"
             }
@@ -39,12 +46,19 @@
     },
     {
         "input": "./aztec-yarn-art-full.svg",
-        "output": "./aztec-yarn-art-cnc-back.gcode",
-        "pathZ": -10,
+        "output": "./aztec-yarn-art-cnc-back-outer.gcode",
+        "pathZ": -5,
         "pathRoots": [
             {
                 "name": "back-depth-outer"
-            },
+            }
+        ]
+    },
+    {
+        "input": "./aztec-yarn-art-full.svg",
+        "output": "./aztec-yarn-art-cnc-back-inner.gcode",
+        "pathZ": -5,
+        "pathRoots": [
             {
                 "name": "back-depth-inner"
             }
